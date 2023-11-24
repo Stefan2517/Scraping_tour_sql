@@ -1,5 +1,6 @@
 import requests
 import selectorlib
+import smtplib, ssl, time
 
 URL = "http://programmer100.pythonanywhere.com/tours/"
 HEADERS = {
@@ -19,7 +20,20 @@ def extract(source):
     return value
 
 
-def send_email():
+def send_email(message):
+    host = "smtp.gmail.com"
+    port = 465
+
+    username = "iojosiojo912@gmail.com"
+    password = "evtk pufr idhm oppa"
+
+    receiver = "stefiarko803@gmail.com"
+    my_context = ssl.create_default_context()
+
+
+    with smtplib.SMTP_SSL(host, port, context=my_context) as server:
+        server.login(username, password)
+        server.sendmail(username, receiver, message)
     print("Sent an email!")
 
 # a de la Append, in loc de r, w...
@@ -34,12 +48,15 @@ def read(extracted):
 
 
 if __name__=="__main__":
-    scraped = scrape(URL)
-    extracted = extract(scraped)
-    print(extracted)
+    while True:
+        scraped = scrape(URL)
+        extracted = extract(scraped)
+        print(extracted)
 
-    content = read(extracted)
-    if extracted != "No upcoming tours":
-        if extracted not in content:
-            store(extracted)
-            send_email()
+        content = read(extracted)
+        if extracted != "No upcoming tours":
+            if extracted not in content:
+                store(extracted)
+                send_email(message="Hey, new event was found!")
+        time.sleep(2)
+
